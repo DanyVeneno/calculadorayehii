@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotizador de Mueble a Medida</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
+  :root{
+    --bg: #101418;
+    --surface: #1B2229;
+    --surface2: #27313A;
+    --text: #F2F5F7;
+    --text-dim: #9BA7B0;
+    --primary: #20E0A0;
+    --primary-dim: rgba(32,224,160,0.14);
+    --secondary: #16B8C4;
+    --secondary-dim: rgba(22,184,196,0.12);
+    --warning: #FFB547;
+    --error: #FF5C5C;
+    --success: #20E0A0;
+    --line: rgba(242,245,247,0.08);
+    --line-strong: rgba(242,245,247,0.18);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-variant-numeric: tabular-nums;
+    min-height:100vh;
+  }
+
+  .wrap{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 22px 60px;
+  }
+
+  header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    border-bottom: 1px solid var(--line-strong);
+    padding-bottom: 18px;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  header .brand{
+    font-family:'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+  }
+  header .brand span{ color: var(--secondary); }
+  header .tag{
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 26px;
+  }
+  @media (max-width: 880px){
+    .grid{ grid-template-columns: 1fr; }
+  }
+
+  .panel{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 22px;
+  }
+
+  h2{
+    font-family:'Fraunces', serif;
+    font-weight: 500;
+    font-size: 18px;
+    margin: 0 0 4px;
+    color: var(--text);
+  }
+  .section-note{
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin: 0 0 16px;
+  }
+
+  .field-row{
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  @media (max-width:520px){ .field-row{ grid-template-columns: 1fr 1fr; } }
+
+  label{
+    display:block;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  input[type=number], input[type=text], select{
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--line-strong);
+    color: var(--text);
+    padding: 9px 10px;
+    border-radius: 3px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  input:focus, select:focus{
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-dim);
+  }
+
+  .divider{
+    height:1px;
+    background: var(--line);
+    margin: 20px 0;
+  }
+
+  .swatch-group{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .swatch{
+    border: 1px solid var(--line-strong);
+    background: var(--surface2);
+    color: var(--text-dim);
+    padding: 8px 13px;
+    border-radius: 3px;
+    font-size: 13px;
+    cursor: pointer;
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .swatch .dot{
+    width: 10px; height:10px; border-radius: 50%;
+    flex-shrink:0;
+  }
+  .swatch.active{
+    border-color: var(--primary);
+    color: var(--text);
+    background: var(--primary-dim);
+  }
+  .swatch:hover{ color: var(--text); }
+
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .toggle-row:last-child{ border-bottom:none; }
+  .toggle-row .lbl{ font-size: 13.5px; }
+  .toggle-row .sub{ font-size: 11.5px; color: var(--text-dim); }
+
+  .stepper{
+    display:flex; align-items:center; gap: 8px;
+  }
+  .stepper button{
+    width: 26px; height: 26px;
+    border-radius: 3px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface2);
+    color: var(--text);
+    cursor:pointer;
+    font-size: 15px;
+    line-height: 1;
+  }
+  .stepper button:hover{ border-color: var(--primary); }
+  .stepper input{ width: 52px; text-align:center; padding: 6px; }
+
+  details{
+    margin-top: 6px;
+  }
+  summary{
+    cursor: pointer;
+    font-size: 12.5px;
+    color: var(--secondary);
+    list-style: none;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  summary::-webkit-details-marker{ display:none; }
+  .adjust-grid{
+    margin-top: 14px;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .adjust-grid label{ margin-bottom:4px; }
+
+  /* Summary panel */
+  .summary-panel{
+    position: sticky;
+    top: 20px;
+    background: linear-gradient(180deg, rgba(32,224,160,0.07), rgba(22,184,196,0.03));
+    border: 1px solid var(--line-strong);
+  }
+  .line-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-size: 13.5px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+    gap: 10px;
+  }
+  .line-item .name{ color: var(--text-dim); }
+  .line-item .val{ color: var(--text); }
+  .line-item.subtotal{
+    font-weight:600;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .total-block{
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--primary);
+  }
+  .total-label{
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: none;
+    margin-bottom: 4px;
+  }
+  .total-value{
+    font-family:'Fraunces', serif;
+    font-size: 40px;
+    font-weight: 500;
+    color: var(--primary);
+    line-height: 1.1;
+  }
+  .total-sub{
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  .cta{
+    margin-top: 20px;
+    width: 100%;
+    padding: 13px;
+    background: var(--primary);
+    color: var(--bg);
+    border: none;
+    border-radius: 3px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .cta:hover{ background: var(--primary); }
+  .cta.ghost{
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    color: var(--text);
+    margin-top: 8px;
+  }
+  .cta.ghost:hover{ border-color: var(--primary); color: var(--primary); }
+
+  .meta-line{
+    font-size: 11.5px;
+    color: var(--text-dim);
+    margin-top: 14px;
+    line-height: 1.5;
+  }
+
+  ::selection{ background: var(--primary); color: var(--bg); }
+
+  .config-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items:start;
+  }
+  @media (max-width: 880px){ .config-grid{ grid-template-columns: 1fr; } }
+
+  .code-table{
+    width:100%;
+    border-collapse: collapse;
+    margin: 10px 0 14px;
+    font-size: 12.5px;
+  }
+  .code-table th{
+    text-align:left;
+    color: var(--text-dim);
+    font-weight: 500;
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .code-table td{
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  .code-table td:last-child, .code-table th:last-child{
+    color: var(--secondary);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+
+  .code-preview{
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--secondary-dim);
+    border: 1px dashed var(--secondary);
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--secondary);
+    text-align:center;
+  }
+
+  .pieces-list{
+    margin-top: 18px;
+  }
+  .piece-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size: 13px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .piece-row .code-tag{
+    font-family:'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--secondary);
+    margin-right: 8px;
+  }
+  .piece-row button{
+    background:none; border:none; color: var(--text-dim);
+    cursor:pointer; font-size:12px; text-decoration:underline;
+  }
+  .piece-row button:hover{ color: var(--text); }
+
+  #viewer3d{
+    width: 100%;
+    height: 420px;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    background: radial-gradient(circle at 50% 30%, rgba(32,224,160,0.07), transparent 70%);
+    cursor: grab;
+  }
+  #viewer3d:active{ cursor: grabbing; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="brand">Taller <span>Cotización</span></div>
+      <div class="tag">Mueble a medida — a partir de plano</div>
+    </div>
+    <div class="tag" id="dateStamp"></div>
+  </header>
+
+  <div class="grid">
+
+    <!-- LEFT: specs -->
+    <div class="panel">
+      <h2>Especificación de plano</h2>
+      <p class="section-note">Captura las medidas del mueble tal como aparecen en el plano de diseño.</p>
+
+      <div class="field-row">
+        <div>
+          <label>Ancho (m)</label>
+          <input type="number" id="ancho" value="2.40" step="0.01" min="0">
+        </div>
+        <div>
+          <label>Alto (m)</label>
+          <input type="number" id="alto" value="2.20" step="0.01" min="0">
+        </div>
+        <div>
+          <label>Profundidad (m)</label>
+          <input type="number" id="prof" value="0.60" step="0.01" min="0">
+        </div>
+      </div>
+
+      <details open>
+        <summary>Ajustar cálculo de superficie ▾</summary>
+        <div class="adjust-grid">
+          <div>
+            <label>Factor de complejidad</label>
+            <select id="complejidad">
+              <option value="1.0">Sencillo (frentes rectos)</option>
+              <option value="1.25" selected>Medio (entrepaños, puertas)</option>
+              <option value="1.5">Complejo (curvas, ensambles finos)</option>
+            </select>
+          </div>
+          <div>
+            <label>Desperdicio de material (%)</label>
+            <input type="number" id="desperdicio" value="12" min="0" max="60">
+          </div>
+        </div>
+      </details>
+
+      <div class="divider"></div>
+
+      <h2>Material principal</h2>
+      <p class="section-note">Estructura y frentes — se calcula sobre la superficie estimada del plano.</p>
+      <div class="swatch-group" id="maderaSwatches"></div>
+
+      <div class="divider"></div>
+
+      <h2>Elementos en metal <span style="color:var(--text-dim); font-weight:400; font-size:13px;">(opcional)</span></h2>
+      <p class="section-note">Acero, fierro o solera — patas, marcos, herrería.</p>
+      <div class="swatch-group" id="metalSwatches"></div>
+      <div class="field-row" style="grid-template-columns: 1fr;">
+        <div>
+          <label>Peso estimado de metal (kg)</label>
+          <input type="number" id="metalKg" value="0" min="0" step="0.5">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h2>Acabados y sistemas de impresión <span style="color:var(--text-dim); font-weight:400; font-size:13px;">(opcional, se pueden combinar)</span></h2>
+      <p class="section-note">Aplicados sobre la superficie del mueble o sobre paneles específicos.</p>
+      <div class="swatch-group" id="acabadoSwatches"></div>
+      <div class="adjust-grid" id="acabadoAreaWrap" style="display:none; margin-bottom:18px;">
+        <div>
+          <label>% de la superficie con acabado</label>
+          <input type="number" id="acabadoPct" value="100" min="1" max="100" step="1">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h2>Iluminación integrada</h2>
+      <div class="toggle-row">
+        <div>
+          <div class="lbl">Puntos de luz LED</div>
+          <div class="sub">Tiras o spots embebidos en el mueble</div>
+        </div>
+        <div class="stepper">
+          <button onclick="stepValue('lucesPtos', -1)">−</button>
+          <input type="number" id="lucesPtos" value="0" min="0" readonly>
+          <button onclick="stepValue('lucesPtos', 1)">+</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <details>
+        <summary>Mano de obra y margen ▾</summary>
+        <div class="adjust-grid">
+          <div>
+            <label>Mano de obra ($/m² madera)</label>
+            <input type="number" id="manoObraM2" value="850" min="0" step="10">
+          </div>
+          <div>
+            <label>Mano de obra metal ($/kg)</label>
+            <input type="number" id="manoObraKg" value="120" min="0" step="10">
+          </div>
+          <div>
+            <label>Margen de utilidad (%)</label>
+            <input type="number" id="margen" value="35" min="0" max="200" step="1">
+          </div>
+          <div>
+            <label>IVA (%)</label>
+            <input type="number" id="iva" value="16" min="0" max="30" step="1">
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- RIGHT: summary -->
+    <div class="panel summary-panel">
+      <h2>Cotización</h2>
+      <p class="section-note" id="dimSummary">—</p>
+
+      <div id="lineItems"></div>
+
+      <div class="total-block">
+        <div class="total-label">Total con IVA</div>
+        <div class="total-value" id="totalValue">$0</div>
+        <div class="total-sub" id="totalSub"></div>
+      </div>
+
+      <button class="cta" onclick="exportPDF()">Descargar PDF</button>
+      <button class="cta ghost" onclick="exportExcel()">Descargar Excel</button>
+      <button class="cta ghost" onclick="resetForm()">Nueva cotización</button>
+
+      <div class="meta-line">Precios de referencia editables por el vendedor. Cotización válida por 15 días naturales; sujeta a confirmación de disponibilidad de material.</div>
+    </div>
+
+  </div>
+
+  <div class="panel" style="margin-top:26px;">
+    <h2>Configurador visual — Cabecera <span style="color:var(--text-dim); font-weight:400; font-size:13px;">(prueba de concepto, 3D)</span></h2>
+    <p class="section-note">Cada pieza de la cabecera se identifica con un código: posición + material + acabado. Ejemplo: Respaldo + MDF + Pintura blanca → <strong style="color:var(--text)">BMDFPB</strong>. Agrega piezas con el generador o escribe el código directamente y se irán colocando en el modelo 3D — arrástralo para rotarlo.</p>
+
+    <div class="config-grid">
+      <div>
+        <details open>
+          <summary>Ver catálogo de códigos ▾</summary>
+          <table class="code-table">
+            <tr><th>Posición</th><th>Código</th></tr>
+            <tr><td>Panel trasero (respaldo)</td><td>B</td></tr>
+            <tr><td>Lateral izquierdo</td><td>LI</td></tr>
+            <tr><td>Lateral derecho</td><td>LD</td></tr>
+            <tr><td>Cornisa superior</td><td>C</td></tr>
+            <tr><td>Base inferior</td><td>BA</td></tr>
+          </table>
+          <table class="code-table">
+            <tr><th>Material</th><th>Código</th></tr>
+            <tr><td>MDF</td><td>MDF</td></tr>
+            <tr><td>Roble</td><td>ROB</td></tr>
+            <tr><td>Nogal</td><td>NOG</td></tr>
+            <tr><td>Encino</td><td>ENC</td></tr>
+            <tr><td>Parota</td><td>PAR</td></tr>
+          </table>
+          <table class="code-table">
+            <tr><th>Acabado</th><th>Código</th></tr>
+            <tr><td>Natural (sin pintura)</td><td>NAT</td></tr>
+            <tr><td>Pintura blanca</td><td>PB</td></tr>
+            <tr><td>Pintura negra</td><td>PN</td></tr>
+            <tr><td>Vinil</td><td>VNL</td></tr>
+            <tr><td>Impresión cama plana</td><td>CPL</td></tr>
+            <tr><td>Impresión DTF</td><td>DTF</td></tr>
+          </table>
+        </details>
+
+        <div class="divider"></div>
+
+        <h2 style="font-size:15px;">Generador de código</h2>
+        <div class="field-row" style="grid-template-columns: 1fr 1fr 1fr;">
+          <div>
+            <label>Pieza</label>
+            <select id="genPieza"></select>
+          </div>
+          <div>
+            <label>Material</label>
+            <select id="genMaterial"></select>
+          </div>
+          <div>
+            <label>Acabado</label>
+            <select id="genAcabado"></select>
+          </div>
+        </div>
+        <div class="code-preview" id="codePreview">B MDF PB</div>
+        <button class="cta" style="margin-top:12px;" onclick="addFromGenerator()">Generar y colocar pieza</button>
+
+        <div class="divider"></div>
+
+        <h2 style="font-size:15px;">O escribe un código directo</h2>
+        <div class="field-row" style="grid-template-columns: 2fr 1fr;">
+          <div>
+            <label>Código de pieza</label>
+            <input type="text" id="manualCode" placeholder="Ej. BMDFPB">
+          </div>
+          <div style="display:flex; align-items:flex-end;">
+            <button class="cta" style="margin-top:0;" onclick="addFromManualCode()">Agregar</button>
+          </div>
+        </div>
+        <div id="codeError" style="font-size:12px; color:#FF5C5C; min-height:16px;"></div>
+
+        <div id="piezasAgregadas" class="pieces-list"></div>
+      </div>
+
+      <div>
+        <div id="viewer3d"></div>
+        <div class="section-note" style="margin-top:10px; text-align:center;">Arrastra para rotar · las piezas sin código aparecen en contorno punteado</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const maderas = [
+  { id: 'roble',   name: 'Roble macizo',        price: 3200, color: '#8a6339' },
+  { id: 'nogal',   name: 'Nogal americano',     price: 4100, color: '#5b3a29' },
+  { id: 'encino',  name: 'Encino',               price: 2600, color: '#a5763f' },
+  { id: 'parota',  name: 'Parota',                price: 2900, color: '#c08a4e' },
+  { id: 'mdf',     name: 'MDF enchapado',        price: 1450, color: '#b79a72' },
+];
+
+const metales = [
+  { id: 'ninguno', name: 'Ninguno',   price: 0,   color: '#3a3a3a' },
+  { id: 'acero',   name: 'Acero inoxidable', price: 220, color: '#9aa3a8' },
+  { id: 'fierro',  name: 'Fierro negro', price: 95, color: '#4a4a4a' },
+  { id: 'solera',  name: 'Solera',    price: 110, color: '#6b6b6b' },
+];
+
+const acabados = [
+  { id: 'pintura',   name: 'Pintura',                price: 320, color: '#c94f4f' },
+  { id: 'vinil',     name: 'Impresión en vinil',      price: 280, color: '#4f7fc9' },
+  { id: 'camaplana', name: 'Impresión cama plana',    price: 650, color: '#c9a44f' },
+  { id: 'dtf',       name: 'Impresión DTF',           price: 540, color: '#7a4fc9' },
+];
+
+// --- Catálogo de códigos de pieza (configurador 3D, cabecera) ---
+const piezasCat = [
+  { prefix: 'LI', name: 'Lateral izquierdo', slot: 'left'  },
+  { prefix: 'LD', name: 'Lateral derecho',   slot: 'right' },
+  { prefix: 'BA', name: 'Base inferior',     slot: 'bottom'},
+  { prefix: 'B',  name: 'Panel trasero',     slot: 'back'  },
+  { prefix: 'C',  name: 'Cornisa superior',  slot: 'top'   },
+];
+const materialesCat = [
+  { code: 'MDF', name: 'MDF',    color: '#b79a72' },
+  { code: 'ROB', name: 'Roble',  color: '#8a6339' },
+  { code: 'NOG', name: 'Nogal',  color: '#5b3a29' },
+  { code: 'ENC', name: 'Encino', color: '#a5763f' },
+  { code: 'PAR', name: 'Parota', color: '#c08a4e' },
+];
+const acabadosCat = [
+  { code: 'NAT', name: 'Natural (sin pintura)', override: null,      pattern: null    },
+  { code: 'PB',  name: 'Pintura blanca',        override: '#f2efe6', pattern: null    },
+  { code: 'PN',  name: 'Pintura negra',         override: '#141312', pattern: null    },
+  { code: 'VNL', name: 'Vinil',                 override: '#4f7fc9', pattern: 'stripe'},
+  { code: 'CPL', name: 'Impresión cama plana',  override: '#c9a44f', pattern: 'stripe'},
+  { code: 'DTF', name: 'Impresión DTF',         override: '#7a4fc9', pattern: 'stripe'},
+];
+const slots = { back: null, left: null, right: null, top: null, bottom: null };
+
+let state = { madera: 'roble', metal: 'ninguno', acabados: new Set() };
+let lastQuote = null;
+
+function buildSwatches(containerId, items, key){
+  const el = document.getElementById(containerId);
+  el.innerHTML = items.map(it => `
+    <div class="swatch ${state[key]===it.id?'active':''}" data-id="${it.id}">
+      <span class="dot" style="background:${it.color}"></span>${it.name}
+    </div>
+  `).join('');
+  el.querySelectorAll('.swatch').forEach(sw=>{
+    sw.addEventListener('click', ()=>{
+      state[key] = sw.dataset.id;
+      buildSwatches(containerId, items, key);
+      calc();
+    });
+  });
+}
+
+function buildAcabadoSwatches(){
+  const el = document.getElementById('acabadoSwatches');
+  el.innerHTML = acabados.map(it => `
+    <div class="swatch ${state.acabados.has(it.id)?'active':''}" data-id="${it.id}">
+      <span class="dot" style="background:${it.color}"></span>${it.name}
+    </div>
+  `).join('');
+  el.querySelectorAll('.swatch').forEach(sw=>{
+    sw.addEventListener('click', ()=>{
+      const id = sw.dataset.id;
+      if (state.acabados.has(id)) state.acabados.delete(id);
+      else state.acabados.add(id);
+      buildAcabadoSwatches();
+      document.getElementById('acabadoAreaWrap').style.display = state.acabados.size ? 'grid' : 'none';
+      calc();
+    });
+  });
+}
+
+function stepValue(id, delta){
+  const inp = document.getElementById(id);
+  let v = Math.max(0, parseInt(inp.value||0) + delta);
+  inp.value = v;
+  calc();
+}
+
+function money(n){
+  return '$' + Math.round(n).toLocaleString('es-MX');
+}
+
+function calc(){
+  const ancho = parseFloat(document.getElementById('ancho').value) || 0;
+  const alto = parseFloat(document.getElementById('alto').value) || 0;
+  const prof = parseFloat(document.getElementById('prof').value) || 0;
+  const complejidad = parseFloat(document.getElementById('complejidad').value);
+  const desperdicio = parseFloat(document.getElementById('desperdicio').value) || 0;
+  const metalKg = parseFloat(document.getElementById('metalKg').value) || 0;
+  const lucesPtos = parseInt(document.getElementById('lucesPtos').value) || 0;
+  const manoObraM2 = parseFloat(document.getElementById('manoObraM2').value) || 0;
+  const manoObraKg = parseFloat(document.getElementById('manoObraKg').value) || 0;
+  const margenPct = parseFloat(document.getElementById('margen').value) || 0;
+  const ivaPct = parseFloat(document.getElementById('iva').value) || 0;
+
+  // Superficie estimada: caja aproximada del mueble (frente + costados + interiores)
+  const supBase = (ancho*alto) + (ancho*prof)*2 + (alto*prof)*2;
+  const supFinal = supBase * complejidad * (1 + desperdicio/100);
+
+  const maderaSel = maderas.find(m=>m.id===state.madera);
+  const metalSel = metales.find(m=>m.id===state.metal);
+
+  const costoMadera = supFinal * maderaSel.price;
+  const costoMetalMat = metalKg * metalSel.price;
+  const costoLuces = lucesPtos * 380; // costo fijo por punto de luz LED integrado
+
+  const acabadoPct = state.acabados.size ? (parseFloat(document.getElementById('acabadoPct').value) || 0) : 0;
+  const supAcabado = supFinal * (acabadoPct/100);
+  let costoAcabados = 0;
+  const acabadosDetalle = [];
+  state.acabados.forEach(id=>{
+    const a = acabados.find(x=>x.id===id);
+    const c = supAcabado * a.price;
+    costoAcabados += c;
+    acabadosDetalle.push({ name: a.name, val: c });
+  });
+
+  const costoManoObra = (supFinal * manoObraM2) + (metalKg * manoObraKg) + (lucesPtos * 150);
+
+  const subtotalMateriales = costoMadera + costoMetalMat + costoLuces + costoAcabados;
+  const subtotal = subtotalMateriales + costoManoObra;
+  const margen = subtotal * (margenPct/100);
+  const preIva = subtotal + margen;
+  const iva = preIva * (ivaPct/100);
+  const total = preIva + iva;
+
+  document.getElementById('dimSummary').textContent =
+    `${ancho.toFixed(2)} × ${alto.toFixed(2)} × ${prof.toFixed(2)} m · ${supFinal.toFixed(2)} m² de material estimado`;
+
+  const items = [
+    { name: `Madera — ${maderaSel.name}`, val: costoMadera },
+  ];
+  if (metalKg > 0 && state.metal !== 'ninguno') items.push({ name: `Metal — ${metalSel.name}`, val: costoMetalMat });
+  if (lucesPtos > 0) items.push({ name: `Iluminación (${lucesPtos} pts)`, val: costoLuces });
+  acabadosDetalle.forEach(a => items.push({ name: `Acabado — ${a.name}`, val: a.val }));
+  items.push({ name: 'Mano de obra', val: costoManoObra });
+  items.push({ name: 'Subtotal', val: subtotal, sub:true });
+  items.push({ name: `Margen (${margenPct}%)`, val: margen });
+  items.push({ name: `IVA (${ivaPct}%)`, val: iva });
+
+  document.getElementById('lineItems').innerHTML = items.map(it => `
+    <div class="line-item ${it.sub?'subtotal':''}">
+      <span class="name">${it.name}</span>
+      <span class="val">${money(it.val)}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('totalValue').textContent = money(total);
+  document.getElementById('totalSub').textContent = `Precio unitario final, IVA incluido`;
+
+  lastQuote = {
+    dim: `${ancho.toFixed(2)} × ${alto.toFixed(2)} × ${prof.toFixed(2)} m`,
+    sup: supFinal,
+    items: items,
+    total: total,
+    fecha: document.getElementById('dateStamp').textContent
+  };
+}
+
+function resetForm(){
+  document.getElementById('ancho').value = 2.40;
+  document.getElementById('alto').value = 2.20;
+  document.getElementById('prof').value = 0.60;
+  document.getElementById('metalKg').value = 0;
+  document.getElementById('lucesPtos').value = 0;
+  state = { madera: 'roble', metal: 'ninguno', acabados: new Set() };
+  buildSwatches('maderaSwatches', maderas, 'madera');
+  buildSwatches('metalSwatches', metales, 'metal');
+  buildAcabadoSwatches();
+  document.getElementById('acabadoAreaWrap').style.display = 'none';
+  calc();
+}
+
+document.querySelectorAll('input, select').forEach(el=>{
+  el.addEventListener('input', calc);
+  el.addEventListener('change', calc);
+});
+
+document.getElementById('dateStamp').textContent = new Date().toLocaleDateString('es-MX', { day:'numeric', month:'long', year:'numeric' });
+
+buildSwatches('maderaSwatches', maderas, 'madera');
+buildSwatches('metalSwatches', metales, 'metal');
+buildAcabadoSwatches();
+calc();
+
+// ================= Exportar PDF / Excel =================
+function exportPDF(){
+  if (!lastQuote) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFont('helvetica','bold'); doc.setFontSize(17);
+  doc.text('Cotización de Mueble a Medida', 14, 20);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(90);
+  doc.text(lastQuote.fecha, 14, 27);
+  doc.text(`Medidas: ${lastQuote.dim}  ·  Superficie estimada: ${lastQuote.sup.toFixed(2)} m²`, 14, 33);
+  doc.setDrawColor(200); doc.line(14, 38, 196, 38);
+
+  let y = 48;
+  doc.setFontSize(11);
+  lastQuote.items.forEach(it=>{
+    doc.setTextColor(it.sub?20:90);
+    doc.setFont('helvetica', it.sub ? 'bold':'normal');
+    doc.text(it.name, 14, y);
+    doc.text(money(it.val), 196, y, { align:'right' });
+    y += 8;
+    if (y > 270){ doc.addPage(); y = 20; }
+  });
+
+  doc.setDrawColor(22,184,196); doc.line(14, y, 196, y);
+  y += 10;
+  doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(20);
+  doc.text('TOTAL', 14, y);
+  doc.text(money(lastQuote.total), 196, y, { align:'right' });
+
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(130);
+  doc.text('Cotización válida por 15 días naturales; sujeta a confirmación de disponibilidad de material.', 14, y+12);
+
+  doc.save('cotizacion-mueble.pdf');
+}
+
+function exportExcel(){
+  if (!lastQuote) return;
+  const rows = [
+    ['Cotización de Mueble a Medida'],
+    [lastQuote.fecha],
+    [`Medidas: ${lastQuote.dim}`, `Superficie estimada: ${lastQuote.sup.toFixed(2)} m²`],
+    [],
+    ['Concepto', 'Monto (MXN)']
+  ];
+  lastQuote.items.forEach(it => rows.push([it.name, Math.round(it.val)]));
+  rows.push([]);
+  rows.push(['TOTAL', Math.round(lastQuote.total)]);
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{ wch: 34 }, { wch: 16 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Cotización');
+  XLSX.writeFile(wb, 'cotizacion-mueble.xlsx');
+}
+
+// ================= Configurador de códigos =================
+function fillSelect(id, list, labelFn, valueFn){
+  document.getElementById(id).innerHTML = list.map(it =>
+    `<option value="${valueFn(it)}">${labelFn(it)}</option>`).join('');
+}
+fillSelect('genPieza', piezasCat, p=>`${p.name} (${p.prefix})`, p=>p.prefix);
+fillSelect('genMaterial', materialesCat, m=>`${m.name} (${m.code})`, m=>m.code);
+fillSelect('genAcabado', acabadosCat, a=>`${a.name} (${a.code})`, a=>a.code);
+
+function currentGeneratedCode(){
+  return document.getElementById('genPieza').value +
+         document.getElementById('genMaterial').value +
+         document.getElementById('genAcabado').value;
+}
+function refreshCodePreview(){
+  document.getElementById('codePreview').textContent = currentGeneratedCode();
+}
+['genPieza','genMaterial','genAcabado'].forEach(id=>
+  document.getElementById(id).addEventListener('change', refreshCodePreview));
+refreshCodePreview();
+
+function parseCode(raw){
+  const code = (raw || '').toUpperCase().replace(/\s+/g,'');
+  const piezaOrdenada = [...piezasCat].sort((a,b)=>b.prefix.length - a.prefix.length);
+  const pieza = piezaOrdenada.find(p => code.startsWith(p.prefix));
+  if (!pieza) return null;
+  let rest = code.slice(pieza.prefix.length);
+  const material = materialesCat.find(m => rest.startsWith(m.code));
+  if (!material) return null;
+  rest = rest.slice(material.code.length);
+  const acabado = acabadosCat.find(a => a.code === rest);
+  if (!acabado) return null;
+  return { pieza, material, acabado, code };
+}
+
+function applyAssignment(assign){
+  slots[assign.pieza.slot] = assign;
+  renderPiecesList();
+  update3DFromSlots();
+}
+
+function addFromGenerator(){
+  const code = currentGeneratedCode();
+  const assign = parseCode(code);
+  document.getElementById('codeError').textContent = '';
+  if (assign) applyAssignment(assign);
+}
+
+function addFromManualCode(){
+  const input = document.getElementById('manualCode');
+  const assign = parseCode(input.value);
+  const errEl = document.getElementById('codeError');
+  if (!assign){
+    errEl.textContent = 'Código no reconocido. Revisa el catálogo (posición + material + acabado).';
+    return;
+  }
+  errEl.textContent = '';
+  applyAssignment(assign);
+  input.value = '';
+}
+
+function removeSlot(slotKey){
+  slots[slotKey] = null;
+  renderPiecesList();
+  update3DFromSlots();
+}
+
+function renderPiecesList(){
+  const el = document.getElementById('piezasAgregadas');
+  const entries = Object.values(slots).filter(Boolean);
+  if (!entries.length){
+    el.innerHTML = '<div class="section-note" style="margin:10px 0 0;">Aún no se han agregado piezas.</div>';
+    return;
+  }
+  el.innerHTML = entries.map(a => `
+    <div class="piece-row">
+      <div><span class="code-tag">${a.code}</span>${a.pieza.name} · ${a.material.name} · ${a.acabado.name}</div>
+      <button onclick="removeSlot('${a.pieza.slot}')">Quitar</button>
+    </div>
+  `).join('');
+}
+renderPiecesList();
+
+// ================= Escena 3D (Three.js) =================
+let scene, camera, renderer, group, meshes = {};
+
+function initViewer(){
+  const container = document.getElementById('viewer3d');
+  const w = container.clientWidth, h = container.clientHeight;
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(42, w/h, 0.1, 100);
+  camera.position.set(0, 0.15, 5.2);
+
+  renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  renderer.setSize(w, h);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  container.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+  const dl = new THREE.DirectionalLight(0xffffff, 0.9);
+  dl.position.set(3, 4, 5);
+  scene.add(dl);
+  const dl2 = new THREE.DirectionalLight(0xffffff, 0.3);
+  dl2.position.set(-3, -2, -4);
+  scene.add(dl2);
+
+  group = new THREE.Group();
+  scene.add(group);
+
+  const wireMat = () => new THREE.MeshBasicMaterial({ color: 0x9ba7b0, wireframe:true, transparent:true, opacity:0.5 });
+
+  meshes.back   = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.3, 0.12), wireMat());
+  meshes.back.position.set(0, 0, 0);
+  meshes.left   = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.3, 0.3), wireMat());
+  meshes.left.position.set(-1.38, 0, 0.05);
+  meshes.right  = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.3, 0.3), wireMat());
+  meshes.right.position.set(1.38, 0, 0.05);
+  meshes.top    = new THREE.Mesh(new THREE.BoxGeometry(2.9, 0.16, 0.22), wireMat());
+  meshes.top.position.set(0, 0.73, 0.03);
+  meshes.bottom = new THREE.Mesh(new THREE.BoxGeometry(2.9, 0.16, 0.22), wireMat());
+  meshes.bottom.position.set(0, -0.73, 0.03);
+
+  Object.values(meshes).forEach(m => group.add(m));
+
+  // Rotación por arrastre
+  let dragging = false, lastX = 0, lastY = 0;
+  let rotY = 0.4, rotX = 0.1;
+  const dom = renderer.domElement;
+  dom.addEventListener('pointerdown', e=>{ dragging = true; lastX = e.clientX; lastY = e.clientY; });
+  window.addEventListener('pointerup', ()=> dragging = false);
+  window.addEventListener('pointermove', e=>{
+    if (!dragging) return;
+    rotY += (e.clientX - lastX) * 0.008;
+    rotX += (e.clientY - lastY) * 0.006;
+    rotX = Math.max(-0.6, Math.min(0.6, rotX));
+    lastX = e.clientX; lastY = e.clientY;
+  });
+
+  function animate(){
+    requestAnimationFrame(animate);
+    if (!dragging) rotY += 0.0018; // giro lento automático
+    group.rotation.y = rotY;
+    group.rotation.x = rotX;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', ()=>{
+    const w2 = container.clientWidth, h2 = container.clientHeight;
+    camera.aspect = w2/h2; camera.updateProjectionMatrix();
+    renderer.setSize(w2, h2);
+  });
+}
+
+function stripeTexture(baseColor){
+  const c = document.createElement('canvas');
+  c.width = 64; c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = baseColor; ctx.fillRect(0,0,64,64);
+  ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+  ctx.lineWidth = 6;
+  for (let i=-64; i<64; i+=14){
+    ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i+64,64); ctx.stroke();
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2,2);
+  return tex;
+}
+
+function update3DFromSlots(){
+  if (!renderer) return;
+  Object.entries(slots).forEach(([slotKey, assign])=>{
+    const mesh = meshes[slotKey];
+    if (!mesh) return;
+    if (!assign){
+      mesh.material = new THREE.MeshBasicMaterial({ color: 0x9ba7b0, wireframe:true, transparent:true, opacity:0.5 });
+      return;
+    }
+    const baseColor = assign.acabado.override || assign.material.color;
+    const matOpts = { color: baseColor, roughness: 0.6, metalness: 0.05 };
+    if (assign.acabado.pattern === 'stripe'){
+      matOpts.map = stripeTexture(baseColor);
+      delete matOpts.color;
+    }
+    mesh.material = new THREE.MeshStandardMaterial(matOpts);
+  });
+}
+
+initViewer();
+
+</script>
+</body>
+</html>
